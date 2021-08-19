@@ -60,8 +60,6 @@ E##
 - - 利用循环执行BFS需要程序员有更清晰的逻辑，需要更多的临时变量辅助函数。  
 #### JS代码
 ```javascript
-// please define the JavaScript input here(you can also rewrite the input). 
-// following is the default: 
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
 let input = '';
@@ -119,6 +117,66 @@ process.stdin.on('end', () => {
   }
  
   console.log(-1);
+  // please define the JavaScript output here. For example: console.log(result);
+  process.exit();
+});
+```
+### 解题方法二：递归
+
+```js
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+let input = '';
+process.stdin.on('data', (data) => {
+  input += data;
+});
+process.stdin.on('end', () => {
+  let inputArray = input.split('\n');
+  // please finish the function body here.
+  let n = parseInt(inputArray[0]);
+  let rows = [];
+  let startX = 0,startY = 0;
+  for(let i = 1; i < inputArray.length; i++) {
+      let cols = inputArray[i].split('');
+      let yIndex = cols.indexOf('S');
+      if(yIndex != -1) {
+          startX = i - 1;
+          startY = yIndex;
+      }
+      rows.push(cols);
+  }
+  
+  // 记录最小路径数
+  let min = 0;
+  let toEnd = (i, j, arr, sum) => {
+    if(i < 0 || j < 0 || i >= n || j >= n || rows[i][j] == '#'){
+      return;
+    }
+    if(rows[i][j] == 'E'){
+        if(min == 0){
+            min = sum;
+        }else if(sum < min){
+            min = sum;
+        }
+        return;
+    }
+    arr[i][j] = '#';
+    console.log(`current sum=${sum}`);
+    console.log(arr);
+    // 上下左右四个方向遍历
+    toEnd(i+1, j, arr, sum+1);
+    toEnd(i-1, j, arr, sum+1);
+    toEnd(i, j+1, arr, sum+1);
+    toEnd(i, j-1, arr, sum+1);
+  }
+  toEnd(startX, startY, rows, 0);
+  if(min == 0){
+    console.log(-1);
+  }else{
+    console.log(min);
+  }
+ 
+  
   // please define the JavaScript output here. For example: console.log(result);
   process.exit();
 });
