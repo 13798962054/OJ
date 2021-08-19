@@ -122,7 +122,14 @@ process.stdin.on('end', () => {
 });
 ```
 ### 解题方法二：递归
-
+#### 思路
+- 递归的思路就非常清晰暴力了，先找出起点"S"，然后就从这点出发对四个方向上进行暴力递归。
+- 需要特别注意的是，JavaScript的非基本变量的传参是传递变量的地址，所以在函数内获取到坐标数组时，必须将数组参数深拷贝到临时数组中。
+#### 该方法的优缺点
+- 优点
+- - 清晰。
+- 缺点
+- - 递归操作实在非常的耗时，n一大就会超出时间限制。
 ```js
 process.stdin.resume();
 process.stdin.setEncoding('utf-8');
@@ -136,6 +143,7 @@ process.stdin.on('end', () => {
   let n = parseInt(inputArray[0]);
   let rows = [];
   let startX = 0,startY = 0;
+    
   for(let i = 1; i < inputArray.length; i++) {
       let cols = inputArray[i].split('');
       let yIndex = cols.indexOf('S');
@@ -149,7 +157,14 @@ process.stdin.on('end', () => {
   // 记录最小路径数
   let min = 0;
   let toEnd = (i, j, arr, sum) => {
-    if(i < 0 || j < 0 || i >= n || j >= n || rows[i][j] == '#'){
+    let tempArr = new Array();
+    for(let x = 0; x < n; x++){
+        tempArr[x] = new Array();
+        for(let y = 0; y < n; y++){
+            tempArr[x][y] = arr[x][y];
+        }
+    }
+    if(i < 0 || j < 0 || i >= n || j >= n || tempArr[i][j] == '#'){
       return;
     }
     if(rows[i][j] == 'E'){
@@ -160,14 +175,13 @@ process.stdin.on('end', () => {
         }
         return;
     }
-    arr[i][j] = '#';
-    console.log(`current sum=${sum}`);
-    console.log(arr);
+    tempArr[i][j] = '#';
+
     // 上下左右四个方向遍历
-    toEnd(i+1, j, arr, sum+1);
-    toEnd(i-1, j, arr, sum+1);
-    toEnd(i, j+1, arr, sum+1);
-    toEnd(i, j-1, arr, sum+1);
+    toEnd(i+1, j, tempArr, sum+1);
+    toEnd(i-1, j, tempArr, sum+1);
+    toEnd(i, j+1, tempArr, sum+1);
+    toEnd(i, j-1, tempArr, sum+1);
   }
   toEnd(startX, startY, rows, 0);
   if(min == 0){
